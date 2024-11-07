@@ -1,0 +1,17 @@
+export enum SPEAKER_TYPE {
+  PATIENT = 1,
+  THERAPIST = 2,
+}
+
+export enum RECORDING_STATUS {
+  COMPLETE = 1,
+  IN_PROGRESS = 2,
+  NOT_STARTED = 3,
+}
+
+export enum TRANSCRIPTION_STATUS {
+  QUEUED = 1,
+  IN_PROGRESS = 2,
+  FAILED = 3,
+  COMPLETED = 4,
+}

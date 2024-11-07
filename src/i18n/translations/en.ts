@@ -1,0 +1,147 @@
+export default {
+  signup: {
+    error: {
+      firstName: "Please enter your first name",
+      lastName: "Please enter your last name",
+      email: "Please enter a valid email",
+      password: "Please enter a valid password",
+      confirmPassword: "Passwords don't match",
+      general: "Something went wrong while signing up",
+    },
+    success: "You have successfully signed up",
+    heading: "Sign up",
+    labels: {
+      firstName: "First Name",
+      lastName: "Last Name",
+      email: "Email",
+      password: "Password",
+      confirmPassword: "Confirm Password",
+    },
+    text: {
+      agree: "I agree with",
+      alreadyAccount: "Already have an account?",
+      terms: "Terms & Conditions",
+    },
+    buttons: {
+      signup: "SIGN UP",
+    },
+    links: {
+      terms: "Terms & Conditions",
+      login: "Log in",
+    },
+  },
+  somethingWentWrong: "Oops.. Something went wrong..",
+  login: {
+    error: {
+      email: "Please enter a valid email",
+      password: "Please enter a valid password",
+      general: "Something went wrong while logging in",
+    },
+    success: "You have successfully logged in",
+    heading: "Log in",
+    labels: {
+      email: "Email",
+      password: "Password",
+    },
+    links: {
+      forgotPassword: "Forgot a password?",
+      signUp: "Sign up",
+    },
+    buttons: {
+      login: "LOG IN",
+    },
+    text: {
+      dontAccount: "Don't have an account?",
+    },
+  },
+  therapists: {
+    title: "Therapist List",
+    noData: "No Therapists Found",
+  },
+  patients: {
+    addPatient: "Add Patient",
+    patientId: "Patient ID",
+    patientName: "Patient Name",
+    numberOfRecordings: "Nº of sessions",
+    noPatientsAvailable: "No Patients Available",
+    noRecordingsFound: "No Sessions Found",
+    patients: "Patients",
+    dateRecorded: "Date recorded",
+    clinician: "Clinician",
+    duration: "Duration",
+    annotationStatus: "Annotation status",
+    addRecording: "Add Session",
+    patientAge: "Age",
+    Id: "Id",
+    DOB: "DOB",
+    recordings: "Recordings",
+    successfullyAdded: "Patient has been successfully added",
+    successfullyUpdated: "Patient has been successfully updated",
+    error: {
+      name: "Please enter a patient name",
+      id: "Please enter a patient id",
+      dob: "Please select patient DOB",
+      basicInfo: "Please enter backgroud information",
+    },
+    recording: {
+      chooseFile: "Choose a file",
+      dragFile: "or drag and drop",
+      MPEG: "MPEG",
+      uploadComplete: "complete",
+      invalidFileType: "Invalid File Type",
+      fileTooLarge: "File is too large. Exceeds the max limit",
+      acceptedVideoFormats: "Supported video types: mp4, mkv, webm, avi",
+    },
+    update: {
+      success: "Patient details uploaded successfully!",
+      error: "Failed to update Patient details!",
+    },
+  },
+  recording: {
+    transcript: {
+      search: "Search transcript",
+      fetchedSuccessfully: "Transcripts fetch successfully",
+      saveSuccess: "transcript saved successfully",
+      saveError: "an error occurred while saving the transcript",
+      notFound: "Unable to find the transcript",
+      maxInterventionsAllowed: "Maximum of 2 interventions allowed.",
+    },
+    fetchedSuccessfully: "Session fetched successfully",
+  },
+  common: {
+    noColumnsAvailable: "No columns available",
+    basicInformation: "Background information",
+    editProfile: "Edit Profile",
+    save: "Save",
+  },
+  footer: {
+    copyright: "Copyright",
+    aedp: "AEDP™",
+    rightsReserved: "All rights reserved",
+  },
+  deleteRecordingModal: {
+    success: "Session deleted successfully",
+    deleteRecording: "Delete session?",
+    sureDelete: "Are you sure you want to delete a",
+    recordingUndone: "session? This action cannot be undone",
+    yesDelete: "Yes, Delete",
+    cancel: "Cancel",
+  },
+  addRecordingModal: {
+    videoValidationMessage: "Please upload a valid video file.",
+    transcriptionSuccess: "Video has been successfully uploaded.",
+    uploadingBtn: "Uploading...",
+    nextBtn: "NEXT",
+    modalHeading: "Upload",
+    preparingS3Upload: "Preparing your recording for secure upload to AWS...",
+    uploadingToS3:
+      "Your recording is being securely uploaded to AWS. Large vidoes will take some time, so please sit tight!",
+    transcriptionInProcess:
+      "Your recording is now being transcribed using AI. This may take a little while—thank you for your patience!",
+    waitForUploading: "Please wait for the upload to complete before closing.",
+  },
+  dropdown: {
+    dropdonBtnLabel: "Add intervention",
+  },
+  seconds: "Seconds",
+} as const;

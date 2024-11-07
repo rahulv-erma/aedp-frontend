@@ -1,0 +1,1606 @@
+openapi: 3.0.3
+info:
+  title: AEDP Backend OpenAPI spec
+  version: 1.0.0
+  description: ''
+paths:
+  /user/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email for login attempt
+                  example: user@example.com
+                password:
+                  type: string
+                  description: Password for login attempt
+                  example: 'password123'
+      responses:
+        '200':
+          description: Credentials are correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: number
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      auth_token:
+                        type: string
+              examples:
+                example:
+                  value:
+                    success: true
+                    message: User logged in successfully.
+                    status: 200
+                    data:
+                      email: user1@example.example
+                      first_name: Some
+                      last_name: Name
+                      auth_token: abcd1234
+        '400':
+          description: Request is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                example:
+                  value:
+                    success: false
+                    code: request_invalid
+                    message: Request is invalid.
+                    status: 400
+                    data: {}
+        '401':
+          description: Bad credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                example:
+                  value:
+                    success: false
+                    code: bad_credentials
+                    message: Bad credentials.
+                    status: 401
+                    data: {}
+      description: Log in with email and password
+  /user/sign-up:
+    post:
+      summary: route to register a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  description: user first name
+                  example: john
+                last_name:
+                  type: string
+                  description: user last name
+                  example: doe
+                email:
+                  type: string
+                  description: user email
+                  example: john@doe.com
+                password:
+                  type: string
+                  description: user password
+                  example: pass123
+      responses:
+        '200':
+          description: User successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: number
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      auth_token:
+                        type: string
+              examples:
+                example:
+                  value:
+                    success: true
+                    message: User successfully created.
+                    status: 200
+                    data:
+                      email: john@doe.com
+                      first_name: john
+                      last_name: doe
+                      auth_token: pass123
+        '400':
+          description: Request is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                example:
+                  value:
+                    success: false
+                    code: request_invalid
+                    message: Request is invalid.
+                    status: 400
+                    data: { }
+        '401':
+          description: Bad credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                example:
+                  value:
+                    success: false
+                    code: bad_credentials
+                    message: Bad credentials.
+                    status: 401
+                    data: { }
+  /therapist/:
+    get:
+      summary: Retrieve a list of therapists
+      responses:
+        '200':
+          description: A list of therapists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Therapist'
+              examples:
+                therapist-list:
+                  value:
+                    - id: 1
+                      unique_identifier: "1231423"
+                      name: "Hello world"
+                      created_at: "2024-10-03T23:05:53.845399Z"
+                      updated_at: "2024-10-03T23:05:53.845431Z"
+                    - id: 2
+                      unique_identifier: "31u3489"
+                      name: "Dr. John"
+                      created_at: "2024-10-10T17:04:40.039597Z"
+                      updated_at: "2024-10-10T17:04:40.039629Z"
+                    - id: 3
+                      unique_identifier: "80983"
+                      name: "Dr Smith"
+                      created_at: "2024-10-10T17:04:50.436900Z"
+                      updated_at: "2024-10-10T17:04:50.436937Z"
+                    - id: 4
+                      unique_identifier: "3441134"
+                      name: "Dr. Muhammad"
+                      created_at: "2024-10-10T17:05:00.640214Z"
+                      updated_at: "2024-10-10T17:05:00.640256Z"
+  /patient/:
+    get:
+      operationId: patient_list
+      description: A mixin that overrides the default delete method to perform soft
+        deletes.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: therapist__id
+        schema:
+          type: integer
+      tags:
+      - patient
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Patient'
+              examples:
+                patient-list:
+                  value:
+                    - id: 2
+                      unique_identifier: "343423"
+                      name: "noceeee"
+                      date_of_birth: "2016-02-08"
+                      background_information: "hello from the other side"
+                      therapist:
+                        id: 1
+                        unique_identifier: "1231423"
+                        name: "Hello world"
+                      age: '8'
+                      updated_at: "2024-10-11T13:30:07.057837Z"
+                      created_at: "2024-10-09T22:39:21.800096Z"
+                      number_of_recordings: 2
+                    - id: 3
+                      unique_identifier: "12"
+                      name: "12"
+                      date_of_birth: "2000-01-20"
+                      background_information: "Hello from the other side"
+                      therapist:
+                        id: 1
+                        unique_identifier: "1231423"
+                        name: "Hello world"
+                      age: '24'
+                      updated_at: "2024-10-10T17:22:08.847006Z"
+                      created_at: "2024-10-09T23:08:52.705614Z"
+                      number_of_recordings: 0
+                    - id: 6
+                      unique_identifier: "12345"
+                      name: "Cool Niceee"
+                      date_of_birth: "2000-01-20"
+                      background_information: "Hello from the other side"
+                      therapist:
+                        id: 1
+                        unique_identifier: "1231423"
+                        name: "Hello world"
+                      age: 24
+                      updated_at: "2024-10-09T23:17:30.794271Z"
+                      created_at: "2024-10-09T23:17:30.794245Z"
+                      number_of_recordings: 0
+                    - id: 10
+                      unique_identifier: "113143"
+                      name: "Abdurrehman"
+                      date_of_birth: "2016-02-11"
+                      background_information: "Hello from the ither side. my name is Abdurrehman. I'm a rocket!!!"
+                      therapist:
+                        id: 1
+                        unique_identifier: "1231423"
+                        name: "Hello world"
+                      age: '8'
+                      updated_at: "2024-10-10T22:58:20.194107Z"
+                      created_at: "2024-10-10T22:56:11.489432Z"
+                      number_of_recordings: 0
+          description: ''
+    post:
+      operationId: patient_create
+      description: A mixin that overrides the default delete method to perform soft
+        deletes.
+      tags:
+      - patient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientCreate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientCreate'
+          description: ''
+  /patient/{id}/:
+    get:
+      operationId: patient_retrieve
+      description: A mixin that overrides the default delete method to perform soft
+        deletes.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this patient.
+        required: true
+      tags:
+      - patient
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDetail'
+              examples:
+                patient-detail:
+                  value:
+                    id: 2
+                    unique_identifier: "343423"
+                    name: "noceeee"
+                    date_of_birth: "2016-02-08"
+                    background_information: "hello from the other side"
+                    therapist:
+                      id: 1
+                      unique_identifier: "1231423"
+                      name: "Hello world"
+                    age: '8'
+                    updated_at: "2024-10-11T13:30:07.057837Z"
+                    created_at: "2024-10-09T22:39:21.800096Z"
+                    number_of_recordings: 2
+                    recordings:
+                      - id: 19
+                        recorded_at: "2024-10-14T14:55:58.499181Z"
+                        video_duration: 118.839
+                        status: 3
+                        updated_at: "2024-10-14T14:56:17.559773Z"
+                        created_at: "2024-10-14T14:55:58.488229Z"
+                      - id: 20
+                        recorded_at: "2024-10-14T15:16:13.324673Z"
+                        video_duration: 118.839
+                        status: 3
+                        updated_at: "2024-10-14T15:16:36.688713Z"
+                        created_at: "2024-10-14T15:16:13.317908Z"
+          description: ''
+    put:
+      operationId: patient_update
+      description: A mixin that overrides the default delete method to perform soft
+        deletes.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this patient.
+        required: true
+      tags:
+      - patient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientUpdate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientUpdate'
+          description: ''
+    patch:
+      operationId: patient_partial_update
+      description: A mixin that overrides the default delete method to perform soft
+        deletes.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this patient.
+        required: true
+      tags:
+      - patient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPatientUpdate'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientUpdate'
+          description: ''
+    delete:
+      operationId: patient_destroy
+      description: A mixin that overrides the default delete method to perform soft
+        deletes.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this patient.
+        required: true
+      tags:
+      - patient
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /recording/:
+    get:
+      operationId: recording_list
+      description: A viewset for active recordings.
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: patient__id
+        schema:
+          type: integer
+      - in: query
+        name: patient__unique_identifier
+        schema:
+          type: string
+      tags:
+      - recording
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recording'
+              examples:
+                recording-list:
+                  value:
+                    - id: 2
+                      recorded_at: "2024-10-09T22:43:16.748601Z"
+                      video_duration: 2000.0
+                      status: 2
+                      patient:
+                        id: 3
+                        unique_identifier: "12"
+                        name: "12"
+                      updated_at: "2024-10-09T23:41:48.781003Z"
+                      created_at: "2024-10-09T22:43:16.703963Z"
+          description: ''
+    post:
+      operationId: recording_create
+      description: |-
+        Handle creating a new recording instance.
+        After starting the AWS transcription job, create the recording object
+        and store the job ID/name in the recording object,
+        then return the created recording.
+      tags:
+      - recording
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RecordingCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RecordingCreate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordingCreate'
+          description: ''
+  /recording/{id}/:
+    get:
+      operationId: recording_retrieve
+      description: A viewset for active recordings.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recording.
+        required: true
+      tags:
+      - recording
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recording'
+              examples:
+                recording-detail:
+                  value:
+                    id: 3
+                    recorded_at: "2024-10-09T23:50:27.944854Z"
+                    video: "https://res.cloudinary.com/abdurrehman/video/upload/v1729552766/videoplayback_online-video-cutter.com_1_yfa2ov.mp4"
+                    video_duration: 118.839
+                    status: 3
+                    patient: 2
+                    updated_at: "2024-10-10T23:47:31.099672Z"
+                    created_at: "2024-10-09T23:50:27.943149Z"
+          description: ''
+    put:
+      operationId: recording_update
+      description: A viewset for active recordings.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recording.
+        required: true
+      tags:
+      - recording
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Recording'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Recording'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recording'
+          description: ''
+    patch:
+      operationId: recording_partial_update
+      description: A viewset for active recordings.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recording.
+        required: true
+      tags:
+      - recording
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRecording'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRecording'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recording'
+          description: ''
+    delete:
+      operationId: recording_destroy
+      description: A viewset for active recordings.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recording.
+        required: true
+      tags:
+      - recording
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /recording/{id}/transcription_status/:
+    get:
+      operationId: recording_transcription_status_retrieve
+      description: |-
+        Check the status of the transcription job for a given recording.
+        and process the transcription, if needed.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this recording.
+        required: true
+      tags:
+      - recording
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recording'
+              examples:
+                transcription-status:
+                  value:
+                    id: 8
+                    recorded_at: "2024-10-14T10:41:00.217999Z"
+                    video: "/media/recordings/videos/videoplayback_online-video-cutter.com_Ns5Meyq.mp4"
+                    video_duration: 118.839
+                    status: 3
+                    transcription_status: 4
+                    transcription_status_details: ""
+                    patient: 2
+                    updated_at: "2024-10-14T13:04:56.275800Z"
+                    created_at: "2024-10-14T10:41:00.180756Z"
+          description: ''
+  /therapist/{id}/:
+    get:
+      operationId: therapist_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this therapist.
+        required: true
+      tags:
+      - therapist
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Therapist'
+              examples:
+                therapist-detail:
+                  value:
+                    - id: 1
+                      unique_identifier: "1231423"
+                      name: "Hello world"
+                      created_at: "2024-10-03T23:05:53.845399Z"
+                      updated_at: "2024-10-03T23:05:53.845431Z"
+          description: ''
+  /transcript/:
+    get:
+      operationId: transcript_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: recording__id
+        schema:
+          type: integer
+      - in: query
+        name: q
+        description: Search query to filter the results.
+        schema:
+          type: string
+        required: false
+      - in: query
+        name: page
+        schema:
+          type: integer
+        required: false
+      tags:
+      - transcript
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: Total number of transcripts.
+                  next:
+                    type: string
+                    nullable: true
+                    description: URL to the next page of transcripts.
+                  previous:
+                    type: string
+                    nullable: true
+                    description: URL to the previous page of transcripts.
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transcript'
+              examples:
+                transcript-list:
+                  value:
+                    count: 27
+                    next: true
+                    previous: null
+                    results:
+                    - id: 456
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "It's just kind of reaching the end. Now, I just, I wanna do something about it."
+                      start_time: "00:00:00"
+                      end_time: "00:00:04"
+                    - id: 477
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "this is an edited transcript"
+                      start_time: "00:00:04"
+                      end_time: "00:00:06"
+                    - id: 457
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "So you said that you're feeling really down, really sad and you feel like you haven't got any motivation? Um But"
+                      start_time: "00:00:05"
+                      end_time: "00:00:15"
+                    - id: 458
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "are you? OK. Yeah, I'm fine. Sorry?"
+                      start_time: "00:00:15"
+                      end_time: "00:00:18"
+                    - id: 459
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "OK. Um And you haven't got any motivation but it sounds like you're putting quite a lot of pressure on yourself to try and feel a bit better. Yeah,"
+                      start_time: "00:00:18"
+                      end_time: "00:00:25"
+                    - id: 460
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "I just, it's kind of hard as well because there's not really anyone to talk about. So"
+                      start_time: "00:00:25"
+                      end_time: "00:00:30"
+                    - id: 461
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "I just kind of stay on my own trying to,"
+                      start_time: "00:00:31"
+                      end_time: "00:00:33"
+                    - id: 462
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "I don't like to think about it. But"
+                      start_time: "00:00:34"
+                      end_time: "00:00:36"
+                    - id: 463
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "OK,"
+                      start_time: "00:00:37"
+                      end_time: "00:00:37"
+                    - id: 464
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "so you've, you say you've been, um you've been quite isolated, there's not many people around,"
+                      start_time: "00:00:38"
+                      end_time: "00:00:42"
+                    - id: 465
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "there's"
+                      start_time: "00:00:42"
+                      end_time: "00:00:43"
+                    - id: 466
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "no one I can talk to about it. No one would listen. I don't understand anyway."
+                      start_time: "00:00:43"
+                      end_time: "00:00:47"
+                    - id: 544
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "Ok. So um I'm just gonna try and fi"
+                      start_time: "00:00:47"
+                      end_time: "00:00:49"
+                    - id: 545
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "Ok. So um I'm just gonna try and find"
+                      start_time: "00:00:47"
+                      end_time: "00:00:50"
+                    - id: 467
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "out a little bit more about you. So I understand that you're an English student at UNI and um you live away from home with some friends, is that right? Ok. So you don't, you don't live far from the UNI"
+                      start_time: "00:00:47"
+                      end_time: "00:01:03"
+                    - id: 468
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "um but you say you feel like you live with your friends but you don't feel like you can talk to them."
+                      start_time: "00:01:03"
+                      end_time: "00:01:07"
+                    - id: 469
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "Yeah. I"
+                      start_time: "00:01:07"
+                      end_time: "00:01:08"
+                    - id: 470
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "mean, they're lovely. II, I get on really well with them but,"
+                      start_time: "00:01:08"
+                      end_time: "00:01:12"
+                    - id: 471
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "I don't know, I just, recently, whenever they wanna go out or stuff I just, I don't wanna bring them down. I can't, they don't understand what I'm going to. They kind of, I don't know, they don't make fun of how I feel but they don't really understand what it's like. I just, I don't wanna go out with them and bring them down and stuff."
+                      start_time: "00:01:13"
+                      end_time: "00:01:31"
+                    - id: 472
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "Ok. So it sounds, do you try and hide the way you're feeling from them? I guess?"
+                      start_time: "00:01:32"
+                      end_time: "00:01:36"
+                    - id: 473
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "I mean,"
+                      start_time: "00:01:36"
+                      end_time: "00:01:37"
+                    - id: 474
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "it's easier to hide it than to try and explain it all the time when no one really wants to know."
+                      start_time: "00:01:38"
+                      end_time: "00:01:43"
+                    - id: 475
+                      recording: 1
+                      speaker_name: "Speaker 2"
+                      speaker_type: 2
+                      text: "Ok. So it sounds like you've been feeling down, you've been feeling unmotivated. Um, you feel like you want to be better, but actually it sounds like you feel like you can't reach out for help. You can't speak, speak to anybody."
+                      start_time: "00:01:44"
+                      end_time: "00:01:56"
+                    - id: 476
+                      recording: 1
+                      speaker_name: "Speaker 1"
+                      speaker_type: 1
+                      text: "No, I don't really talk to my parents."
+                      start_time: "00:01:56"
+                      end_time: "00:01:58"
+          description: ''
+    post:
+      operationId: transcript_create
+      tags:
+      - transcript
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transcript'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transcript'
+          description: ''
+  /transcript/{id}/:
+    get:
+      operationId: transcript_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transcript.
+        required: true
+      tags:
+      - transcript
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transcript'
+          description: ''
+    put:
+      operationId: transcript_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transcript.
+        required: true
+      tags:
+      - transcript
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transcript'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transcript'
+          description: ''
+    patch:
+      operationId: transcript_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transcript.
+        required: true
+      tags:
+      - transcript
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTranscript'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transcript'
+          description: ''
+    delete:
+      operationId: transcript_destroy
+      description: Disable the delete method by raising MethodNotAllowed.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this transcript.
+        required: true
+      tags:
+      - transcript
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  
+    post:
+      operationId: user_sign_up_create
+      description: Sign up new user
+      tags:
+      - user
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    NullEnum:
+      enum:
+      - null
+    PatchedPatientUpdate:
+      type: object
+      description: Serializer for updating a Patient.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_identifier:
+          type: string
+          description: Unique ID for the patient.
+          maxLength: 255
+        name:
+          type: string
+          description: Patient`s name.
+          maxLength: 255
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient`s date of birth.
+        background_information:
+          type: string
+          nullable: true
+          description: Background details about the patient.
+    PatchedRecording:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        recorded_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the recording was created.
+        video:
+          type: string
+          format: uri
+          description: The video file of the recording.
+        video_duration:
+          type: number
+          format: double
+          nullable: true
+          description: Duration of the video in seconds.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          description: |-
+            The current status of the recording.
+
+            * `1` - Complete
+            * `2` - In Progress
+            * `3` - Not Started
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+        transcription_status:
+          nullable: true
+          description: |-
+            The current transcription status of the recording, as determined by AWS.
+
+            * `1` - Queued
+            * `2` - In Progress
+            * `3` - Failed
+            * `4` - Completed
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+          oneOf:
+          - $ref: '#/components/schemas/TranscriptionStatusEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        transcription_status_details:
+          type: string
+          nullable: true
+          description: Stores detailed status of transcription processing, including
+            progress updates, success or failure status, and failure reasons if applicable.
+        patient:
+          type: integer
+          description: The patient associated with this recording.
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedTranscript:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        recording:
+          type: integer
+          description: The recording this transcript is associated with.
+        speaker_name:
+          type: string
+          description: The name of the speaker in the transcript.
+          maxLength: 255
+        speaker_type:
+          allOf:
+          - $ref: '#/components/schemas/SpeakerTypeEnum'
+          description: |-
+            The type of speaker (e.g., patient, therapist).
+
+            * `1` - Patient
+            * `2` - Therapist
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+        text:
+          type: string
+          description: The transcript text spoken by the speaker.
+          maxLength: 1000
+        start_time:
+          type: string
+          format: time
+          description: The start time in the recording when this text was spoken.
+        end_time:
+          type: string
+          format: time
+          description: The end time in the recording when this text was completed.
+    Patient:
+      type: object
+      description: Full Patient serializer with additional fields.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_identifier:
+          type: string
+          description: Unique ID for the patient.
+          maxLength: 255
+        name:
+          type: string
+          description: Patient`s name.
+          maxLength: 255
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient`s date of birth.
+        background_information:
+          type: string
+          nullable: true
+          description: Background details about the patient.
+        therapist:
+          $ref: '#/components/schemas/TherapistBasicInfo'
+        age:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        number_of_recordings:
+          type: number
+          readOnly: true
+      required:
+      - age
+      - created_at
+      - date_of_birth
+      - id
+      - name
+      - number_of_recordings
+      - therapist
+      - unique_identifier
+      - updated_at
+    PatientCreate:
+      type: object
+      description: Serializer for creating a Patient.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_identifier:
+          type: string
+          description: Unique ID for the patient.
+          maxLength: 255
+        name:
+          type: string
+          description: Patient`s name.
+          maxLength: 255
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient`s date of birth.
+        background_information:
+          type: string
+          nullable: true
+          description: Background details about the patient.
+        therapist_id:
+          type: integer
+      required:
+      - date_of_birth
+      - id
+      - name
+      - therapist_id
+      - unique_identifier
+    PatientDetail:
+      type: object
+      description: Serializer for retrieving a patient with associated recordings.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_identifier:
+          type: string
+          description: Unique ID for the patient.
+          maxLength: 255
+        name:
+          type: string
+          description: Patient`s name.
+          maxLength: 255
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient`s date of birth.
+        background_information:
+          type: string
+          nullable: true
+          description: Background details about the patient.
+        therapist:
+          $ref: '#/components/schemas/TherapistBasicInfo'
+        age:
+          type: string
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        number_of_recordings:
+          type: number
+          readOnly: true
+        recordings:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecordingBasicInfo'
+          readOnly: true
+      required:
+      - age
+      - created_at
+      - date_of_birth
+      - id
+      - name
+      - number_of_recordings
+      - recordings
+      - therapist
+      - unique_identifier
+      - updated_at
+    PatientUpdate:
+      type: object
+      description: Serializer for updating a Patient.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_identifier:
+          type: string
+          description: Unique ID for the patient.
+          maxLength: 255
+        name:
+          type: string
+          description: Patient`s name.
+          maxLength: 255
+        date_of_birth:
+          type: string
+          format: date
+          description: Patient`s date of birth.
+        background_information:
+          type: string
+          nullable: true
+          description: Background details about the patient.
+      required:
+      - date_of_birth
+      - id
+      - name
+      - unique_identifier
+    Recording:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        recorded_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the recording was created.
+        video:
+          type: string
+          format: uri
+          description: The video file of the recording.
+        video_duration:
+          type: number
+          format: double
+          nullable: true
+          description: Duration of the video in seconds.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          description: |-
+            The current status of the recording.
+
+            * `1` - Complete
+            * `2` - In Progress
+            * `3` - Not Started
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+        transcription_status:
+          nullable: true
+          description: |-
+            The current transcription status of the recording, as determined by AWS.
+
+            * `1` - Queued
+            * `2` - In Progress
+            * `3` - Failed
+            * `4` - Completed
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+          oneOf:
+          - $ref: '#/components/schemas/TranscriptionStatusEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        transcription_status_details:
+          type: string
+          nullable: true
+          description: Stores detailed status of transcription processing, including
+            progress updates, success or failure status, and failure reasons if applicable.
+        patient:
+          type: integer
+          description: The patient associated with this recording.
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - patient
+      - recorded_at
+      - updated_at
+      - video
+    RecordingBasicInfo:
+      type: object
+      description: Serializer for the Recording model with basic fields
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        recorded_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: The date and time when the recording was created.
+        video_duration:
+          type: number
+          format: double
+          nullable: true
+          description: Duration of the video in seconds.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          description: |-
+            The current status of the recording.
+
+            * `1` - Complete
+            * `2` - In Progress
+            * `3` - Not Started
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - recorded_at
+      - updated_at
+    RecordingCreate:
+      type: object
+      description: Serializer for creating a Recording/Session.
+      properties:
+        patient_id:
+          type: integer
+        video:
+          type: string
+          format: uri
+          description: The video file of the recording.
+      required:
+      - patient_id
+      - video
+    SpeakerTypeEnum:
+      enum:
+      - 1
+      - 2
+      type: integer
+      description: |-
+        * `1` - Patient
+        * `2` - Therapist
+    StatusEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+      description: |-
+        * `1` - Complete
+        * `2` - In Progress
+        * `3` - Not Started
+    Therapist:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_identifier:
+          type: string
+          description: Unique ID for the therapist.
+          maxLength: 255
+        name:
+          type: string
+          description: Therapist`s name.
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - unique_identifier
+      - updated_at
+    TherapistBasicInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        unique_identifier:
+          type: string
+          description: Unique ID for the therapist.
+          maxLength: 255
+        name:
+          type: string
+          description: Therapist`s name.
+          maxLength: 255
+      required:
+      - id
+      - name
+      - unique_identifier
+    Transcript:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        recording:
+          type: integer
+          description: The recording this transcript is associated with.
+        speaker_name:
+          type: string
+          description: The name of the speaker in the transcript.
+          maxLength: 255
+        speaker_type:
+          allOf:
+          - $ref: '#/components/schemas/SpeakerTypeEnum'
+          description: |-
+            The type of speaker (e.g., patient, therapist).
+
+            * `1` - Patient
+            * `2` - Therapist
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+        text:
+          type: string
+          description: The transcript text spoken by the speaker.
+          maxLength: 1000
+        start_time:
+          type: string
+          format: time
+          description: The start time in the recording when this text was spoken.
+        end_time:
+          type: string
+          format: time
+          description: The end time in the recording when this text was completed.
+      required:
+      - end_time
+      - id
+      - recording
+      - speaker_name
+      - speaker_type
+      - start_time
+      - text
+    TranscriptionStatusEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      description: |-
+        * `1` - Queued
+        * `2` - In Progress
+        * `3` - Failed
+        * `4` - Completed
+    error:
+        type: object
+        properties:
+          success:
+            type: boolean
+            description: Error details
+          code:
+            type: string
+          message:
+            type: string
+          status:
+            type: integer
+          data:
+            type: object
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
